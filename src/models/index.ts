@@ -1,0 +1,5 @@
+export * from './usuario.model'
+export * from './tweet.model'
+export * from './seguidor.model'
+export * from './re-tweet.model'
+export * from './like.model'

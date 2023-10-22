@@ -1,0 +1,84 @@
+generator client {
+provider = "prisma-client-js"
+}
+
+datasource db {
+provider = "postgresql"
+url = env("DATABASE_URL")
+}
+
+model Usuario {
+    id String @db.Uuid @default(uuid()) @id
+    nome String @db.VarChar(100)
+    email String @db.VarChar(80) @unique
+    username String @db.VarChar(15) @unique
+    senha String @db.VarChar(100) 
+    authToken String? @db.Text @map("auth_token")
+
+    criadoEm DateTime @default(now()) @map("criado_em")
+    atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+    tweet Tweet[]
+    segue Seguidor[] @relation("segue")
+    seguido Seguidor[] @relation("seguido")
+    usernameLike Like?
+
+
+    @@map("usuario")
+}
+
+model Tweet {
+    id String @db.Uuid @default(uuid()) @id
+    conteudo String @db.VarChar(200) 
+    tipo Int @db.Integer
+
+    idUsuario String @db.Uuid @unique @map("id_usuario")
+    usuario Usuario @relation(fields: [idUsuario], references:[id])
+
+    criadoEm DateTime @default(now()) @map("criado_em")
+    atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+    like Like[]
+    tweet ReTweet[] @relation("tweet")
+    reTweet ReTweet[] @relation("re_tweet")
+
+    @@map("tweet")
+}
+
+model Like {
+    id String @db.Uuid @default(uuid()) @id
+
+    usernameUsuario String @db.VarChar(15) @unique
+    username Usuario @relation(fields: [usernameUsuario], references: [username])
+
+    idTweet String @db.Uuid @unique @map("id_tweet")
+    tweet Tweet @relation(fields: [idTweet], references:[id])
+
+    criadoEm DateTime @default(now()) @map("criado_em")
+    atualizadoEm DateTime @updatedAt @map("atualizado_em")
+        
+}
+
+model ReTweet {
+    idTweet String @db.Uuid @unique @map("id_tweet")
+    tweet Tweet @relation("tweet", fields: [idTweet], references:[id])
+    
+    idReTweet String @db.Uuid @unique @map("id_retweet")
+    reTweet Tweet @relation("re_tweet", fields: [idReTweet], references:[id])
+
+    criadoEm DateTime @default(now()) @map("criado_em")
+    atualizadoEm DateTime @updatedAt @map("atualizado_em")
+}
+
+model Seguidor {                                                                                          
+    id String @db.Uuid @default(uuid()) @id
+
+    idUsuario String @db.Uuid @unique @map("id_usuario") // é o que vai ser seguido
+    usuario Usuario @relation("seguido", fields: [idUsuario], references:[id])
+    
+    idSeguidor String @db.Uuid @unique @map("id_seguidor") // este é o que vai seguir o usuario - quem segue
+    seguidor Usuario @relation("segue", fields: [idSeguidor], references:[id])
+
+    criadoEm DateTime @default(now()) @map("criado_em")
+    atualizadoEm DateTime @updatedAt @map("atualizado_em")
+}
