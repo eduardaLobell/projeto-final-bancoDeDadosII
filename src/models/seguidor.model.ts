@@ -2,8 +2,8 @@
 export class Seguidor {
     constructor (
         private _id: string,
-        private _idUsuario: string, 
-        private _idSeguidor: string
+        private _idUsuario: string, // seguido
+        private _idSeguidor: string // segue
     ) {}
 
     get id(): string {

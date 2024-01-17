@@ -3,6 +3,8 @@ import repository from "../database/prisma.connection";
 import { CadastrarUsuarioDTO, ResponseDTO, LoginDTO } from "../dtos";
 import { Usuario } from "../models";
 import { randomUUID } from "crypto";
+import { JWTAdapter } from "../adapters/jwt.adapter";
+import envs from "../envs";
 
 export class UsuarioService {
     public async cadastrar (dados: CadastrarUsuarioDTO): Promise<ResponseDTO>{
@@ -58,18 +60,23 @@ export class UsuarioService {
       };
     }
 
-    const token = randomUUID();
+    // const token = randomUUID();
+
+    const alunoModel = this.mapToModel({ ...usuarioEncontrado});
+
+    const jwt = new JWTAdapter(envs.JWT_SECRET_KEY, envs.JWT_EXPIRE_IN);
+    const token = jwt.gerarToken(alunoModel.toJSON());
 
     await repository.usuario.update({
-      where: { id: usuarioEncontrado.id },
-      data: { authToken: token },
-    });
+       where: { id: usuarioEncontrado.id },
+       data: { authToken: token },
+     });
 
     return {
       code: 200,
       ok: true,
       mensagem: "Login efetuado",
-      dados: { token },
+      dados: {user: alunoModel.toJSON(), token },
     };
   }
 
