@@ -4,7 +4,7 @@ import { CadastrarUsuarioDTO, ResponseDTO, LoginDTO } from "../dtos";
 import { Usuario } from "../models";
 import { randomUUID } from "crypto";
 import { JWTAdapter } from "../adapters/jwt.adapter";
-import envs from "../envs";
+import "dotenv/config"
 
 export class UsuarioService {
     public async cadastrar (dados: CadastrarUsuarioDTO): Promise<ResponseDTO>{
@@ -64,7 +64,7 @@ export class UsuarioService {
 
     const alunoModel = this.mapToModel({ ...usuarioEncontrado});
 
-    const jwt = new JWTAdapter(envs.JWT_SECRET_KEY, envs.JWT_EXPIRE_IN);
+    const jwt = new JWTAdapter(process.env.JWT_SECRET_KEY as string , process.env.JWT_EXPIRE_IN as string );
     const token = jwt.gerarToken(alunoModel.toJSON());
 
     await repository.usuario.update({

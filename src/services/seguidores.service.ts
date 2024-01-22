@@ -1,24 +1,26 @@
 import repository from "../database/prisma.connection";
-import { ResponseDTO } from "../dtos";
-import { SeguirDTO } from "../dtos/seguir.dto";
+import { ResponseDTO, SeguirDTO } from "../dtos";
 
 
 export class SeguidoresService {
-    public async seguir(dados: SeguirDTO): Promise<ResponseDTO> {
-        const seguidoExiste = await repository.usuario.findUnique({
-            where: { idSeguido: dados.idSeguido}
-        })
 
-        if(!seguidoExiste) {
-            return {
-                code: 400,
-                ok: false,
-                mensagem: 'ID de usuário inválido!'
-            }
+    public async listarSeguidores(idSeguidor: string): Promise<ResponseDTO> {
+
+        const dados = await repository.seguidor.findMany({ where: { idSeguidor: idSeguidor } })
+        // está variável vai trazer todos os seguidores que o 'idSeguidor' segue
+        // where é o parâmetro utilizado para buscar na lista de seguidores do banco de dados
+
+
+        return {
+            ok: true,
+            code: 200, 
+            mensagem: "Listagem de seguidores concluída",
+            dados: dados
         }
-
-
-        const seguidorDB = await repository.seguidor.
-
     }
+
+    public async seguir(dados: SeguirDTO): Promise<ResponseDTO> {
+        
+    }
+    
 }

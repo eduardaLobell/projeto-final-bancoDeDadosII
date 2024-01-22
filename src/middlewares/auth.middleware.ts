@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { UsuarioService } from '../services';
+import jwt from 'jsonwebtoken'
 
 export class Auth {
 	public async validar(req: Request, res: Response, next: NextFunction) {
@@ -9,23 +9,48 @@ export class Auth {
 			return res.status(401).json({
 				code: 401,
 				ok: false,
-				mensagem: 'Token é obrigatório',
+				mensagem: 'Autorização falhou.',
 			});
 		}
 
-		const service = new UsuarioService();
-		const usuarioAutenticado = await service.validarToken(token);
+		const decoded = token.split(" ")[1]
+		const verificacao = jwt.verify(decoded, process.env.SECRET_WORD || "")
 
-		if (!usuarioAutenticado) {
-			return res.status(401).json({
-				code: 401,
-				ok: false,
-				mensagem: 'Token inválido',
-			});
+		req.authUser = verificacao as {
+			id: string;
+			name: string;
+			username: string;
+			avatar: string;
+			email: string
 		}
-
-		req.body.idUsuario = usuarioAutenticado;
 
 		return next();
 	}
 }
+
+// try {
+// 	const authorization = req.headers.authorization
+
+// 	if (!authorization) {
+// 		return res.status(401).send({
+// 			code: 401,
+// 			message: "Autenticação do token falhou"
+// 		})
+// 	}
+
+// 	const decoded = authorization.split(" ")[1]
+// 	const verify = jwt.verify(decoded, process.env.SECRET_WORD || "")
+
+// 	req.authUser = verify as {
+// 		id: string;
+// 		name: string;
+// 		username: string;
+// 		avatar: string;
+// 		email: string
+// 	}
+// 	next()
+// } catch (error: any) {
+// 	return res.status(500).send({
+// 		message: error.toString()
+// 	})
+// }

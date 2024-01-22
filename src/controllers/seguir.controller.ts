@@ -1,7 +1,17 @@
 import { Request, Response } from "express"
+import { SeguidoresService } from "../services/seguidores.service"
 
 
 export class SeguidoresController {
+
+    public async listar(req: Request, res: Response) {
+        const { idSeguidor } = req.body
+        const service = new SeguidoresService()
+        const resultado = await service.listarSeguidores(idSeguidor)
+
+        return res.status(resultado.code).send(resultado)
+    }
+
     public async seguir (req: Request, res: Response ) {
         const { idUsuario } = req.body
 

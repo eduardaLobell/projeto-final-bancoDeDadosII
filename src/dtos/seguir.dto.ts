@@ -1,4 +1,6 @@
 export interface SeguirDTO {
     idUsuario: string
-    idSeguido: string
+    usernameUsuario: string
+    idSeguidor: string
+    usernameSeguidor: string
 }

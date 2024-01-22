@@ -1,14 +1,14 @@
 import { Router } from "express"
-import { Auth, CriarTweet } from "../middlewares"
-import { TweetController } from "../controllers"
+import { Auth } from "../middlewares"
+import { SeguidoresController } from "../controllers/seguir.controller"
 
 export function seguidoresRoutes() {
     const router = Router()
     const auth = new Auth()
-    //const criarTweet = new CriarTweet()
-    //const controller = new TweetController()
+    const controller = new SeguidoresController
 
-   //router.post('/', [auth.validar, criarTweet.validar], controller.criar) //criar tweets
-    
+    router.get('/', [auth.validar], controller.listar)
+    router.post('/:idUsuario', [auth.validar], controller.seguir)
+
     return router
 }
